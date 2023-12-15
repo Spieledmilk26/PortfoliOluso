@@ -1,16 +1,16 @@
-pip install streamlit fbprophet fredapi py_vollib
+#pip install streamlit fbprophet fredapi py_vollib
 
-pip install streamlit
+#pip install streamlit
 
-pip install py_vollib
+#pip install py_vollib
 
-pip install fredapi
+#pip install fredapi
 
-pip install arch
+#pip install arch
 
-pip install pandas_market_calendars
+#pip install pandas_market_calendars
 
-pip install yfinance
+#pip install yfinance
 
 
 # Import necessary libraries
