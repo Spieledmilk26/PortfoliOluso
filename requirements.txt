@@ -8,8 +8,7 @@ prophet==1.1.5
 py_vollib==1.0.1
 scipy==1.11.4
 seaborn==0.12.2
-session_info==1.0.0
-sklearn==1.2.2
+scikit-learn>=0.24.2
 streamlit==1.29.0
 xgboost==2.0.2
 yfinance==0.2.33
