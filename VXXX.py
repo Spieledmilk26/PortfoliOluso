@@ -201,7 +201,7 @@ def calculate_individual_holdings_stats(returns, weights):
     weighted_volatility = np.dot(individual_volatility, weights)
     weighted_returns = np.dot(individual_returns, weights)
     return individual_volatility, individual_returns, weighted_volatility, weighted_returns
-try:
+
 # Add options for different functionalities
 if analysis_option == "Equity Price Forecast":
 st.sidebar.header("Equity Price Forecast")
@@ -491,6 +491,3 @@ else:
 
 
 st.sidebar.write("Data provided by Yahoo Finance. This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis.")
-
-except Exception as e:
-    st.exception(f"ERROR! VERIFY PARAMETERS AND RERUN. Details: {str(e)}")
