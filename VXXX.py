@@ -12,6 +12,7 @@
 
 #pip install yfinance
 
+pip install yfinance
 
 # Import necessary libraries
 import streamlit as st
