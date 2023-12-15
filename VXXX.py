@@ -30,7 +30,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import mean_squared_error
 import xgboost as xgb
-import pandas_market_calendars as mcal
 import altair as alt
 
 
