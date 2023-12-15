@@ -17,7 +17,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import yfinance as yf
+from yfinance import yfinance as yf
 from scipy.stats import norm
 from datetime import datetime, timedelta
 from py_vollib.black_scholes import black_scholes as bs
