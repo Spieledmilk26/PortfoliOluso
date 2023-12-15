@@ -3,7 +3,6 @@ fbprophet==0.7.1
 fredapi==0.4.1
 py_vollib>=1.0.0
 arch==4.19
-pandas_market_calendars==1.8.0
 yfinance==0.1.63
 prophet>=1.0.1
 plotly==5.3.1
