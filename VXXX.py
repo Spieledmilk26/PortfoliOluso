@@ -201,293 +201,296 @@ def calculate_individual_holdings_stats(returns, weights):
     weighted_volatility = np.dot(individual_volatility, weights)
     weighted_returns = np.dot(individual_returns, weights)
     return individual_volatility, individual_returns, weighted_volatility, weighted_returns
-
-# Add options for different functionalities
-if analysis_option == "Equity Price Forecast":
-    st.sidebar.header("Equity Price Forecast")
-    option = st.sidebar.selectbox("Select an Option", ["Stock Price Forecast using fbProphet", "Garch Model", "XGBoost Model"])
-
-    stock_symbol = st.sidebar.text_input("Enter Stock Symbol")
-    start_date = st.sidebar.date_input("Start Date")
-    train_end_date = st.sidebar.date_input("Train End Date")
-    test_start_date = st.sidebar.date_input("Test Start Date")
-    end_date = st.sidebar.date_input("End Date")
-    prediction_range = st.sidebar.number_input("Prediction Range (days)", 1, 365, 30)
-
-    if st.sidebar.button("Generate Forecast"):
-        if option == "Stock Price Forecast using fbProphet":
-            load_stock_data_and_forecast_fbprophet(stock_symbol, start_date, end_date, train_end_date, test_start_date, prediction_range)
-        elif option == "Garch Model":
-            load_stock_data_and_forecast_garch(stock_symbol, start_date, end_date, train_end_date, test_start_date, prediction_range)
-        elif option == "XGBoost Model":
-            load_stock_data_and_forecast_xgboost(stock_symbol, start_date, end_date, train_end_date, test_start_date)
-
-elif analysis_option == "Portfolio Risk":
-    st.sidebar.header("Value at Risk (VaR) Analysis")
-
-    # List of stock tickers in the portfolio
-    predefined_tickers = [
-        'MMM', 'T', 'ABBV', 'ABT', 'ACN', 'ALL', 'GOOGL', 'GOOG', 'MO', 'AMZN',
-        'BRK-B', 'BIIB', 'BLK', 'BA', 'BMY', 'CVS', 'COF', 'CAT', 'CVX', 'CSCO',
-        'COP', 'DHR', 'DUK', 'DD', 'EMC', 'EMR', 'EXC', 'XOM', 'META', 'FDX',
-        'GS', 'HAL', 'HD', 'HON', 'INTC', 'IBM', 'JPM', 'JNJ', 'KMI', 'LLY',
-        'MET', 'MSFT', 'MS', 'NKE', 'NEE', 'OXY', 'ORCL', 'PYPL', 'PEP', 'PFE',
-        'SLB', 'SPG', 'SO', 'SBUX', 'TGT', 'TXN', 'BK', 'USB', 'UNP', 'UPS',
-        'WBA', 'DIS', 'WFC'
-    ]
-
-    # Multiselect for selecting multiple stock tickers
-    selected_tickers = st.sidebar.multiselect("Select Stock Tickers", predefined_tickers)
-
-    # Input custom tickers
-    custom_tickers = st.sidebar.text_area("Enter Custom Tickers (comma-separated)", "").strip()
-
-    # Combine predefined and custom tickers
-    all_tickers = selected_tickers + [ticker.strip().upper() for ticker in custom_tickers.split(",") if ticker.strip()]
-
-    if not all_tickers:
-        st.warning("Please select or enter at least one stock ticker.")
-    else:
-        # Radio button for selecting equal or custom weights
-        weight_option = st.radio("Select Weight Option", ["Equal Weights", "Custom Weights"])
-
-        # Initialize an empty list to store weights
-        weights = []
-
-        if weight_option == "Equal Weights":
-            weights = np.array([1 / len(all_tickers)] * len(all_tickers))
+try:
+        # Add options for different functionalities
+        if analysis_option == "Equity Price Forecast":
+        st.sidebar.header("Equity Price Forecast")
+        option = st.sidebar.selectbox("Select an Option", ["Stock Price Forecast using fbProphet", "Garch Model", "XGBoost Model"])
+        
+        stock_symbol = st.sidebar.text_input("Enter Stock Symbol")
+        start_date = st.sidebar.date_input("Start Date")
+        train_end_date = st.sidebar.date_input("Train End Date")
+        test_start_date = st.sidebar.date_input("Test Start Date")
+        end_date = st.sidebar.date_input("End Date")
+        prediction_range = st.sidebar.number_input("Prediction Range (days)", 1, 365, 30)
+        
+        if st.sidebar.button("Generate Forecast"):
+            if option == "Stock Price Forecast using fbProphet":
+                load_stock_data_and_forecast_fbprophet(stock_symbol, start_date, end_date, train_end_date, test_start_date, prediction_range)
+            elif option == "Garch Model":
+                load_stock_data_and_forecast_garch(stock_symbol, start_date, end_date, train_end_date, test_start_date, prediction_range)
+            elif option == "XGBoost Model":
+                load_stock_data_and_forecast_xgboost(stock_symbol, start_date, end_date, train_end_date, test_start_date)
+        
+        elif analysis_option == "Portfolio Risk":
+        st.sidebar.header("Value at Risk (VaR) Analysis")
+        
+        # List of stock tickers in the portfolio
+        predefined_tickers = [
+            'MMM', 'T', 'ABBV', 'ABT', 'ACN', 'ALL', 'GOOGL', 'GOOG', 'MO', 'AMZN',
+            'BRK-B', 'BIIB', 'BLK', 'BA', 'BMY', 'CVS', 'COF', 'CAT', 'CVX', 'CSCO',
+            'COP', 'DHR', 'DUK', 'DD', 'EMC', 'EMR', 'EXC', 'XOM', 'META', 'FDX',
+            'GS', 'HAL', 'HD', 'HON', 'INTC', 'IBM', 'JPM', 'JNJ', 'KMI', 'LLY',
+            'MET', 'MSFT', 'MS', 'NKE', 'NEE', 'OXY', 'ORCL', 'PYPL', 'PEP', 'PFE',
+            'SLB', 'SPG', 'SO', 'SBUX', 'TGT', 'TXN', 'BK', 'USB', 'UNP', 'UPS',
+            'WBA', 'DIS', 'WFC'
+        ]
+        
+        # Multiselect for selecting multiple stock tickers
+        selected_tickers = st.sidebar.multiselect("Select Stock Tickers", predefined_tickers)
+        
+        # Input custom tickers
+        custom_tickers = st.sidebar.text_area("Enter Custom Tickers (comma-separated)", "").strip()
+        
+        # Combine predefined and custom tickers
+        all_tickers = selected_tickers + [ticker.strip().upper() for ticker in custom_tickers.split(",") if ticker.strip()]
+        
+        if not all_tickers:
+            st.warning("Please select or enter at least one stock ticker.")
         else:
-            for ticker in all_tickers:
-                weight = st.text_input(f"Weight for {ticker}", value="0.001", key=ticker)
-                weights.append(float(weight))  # Convert the input to float
-
-            # Normalize custom weights to ensure they sum up to 1
-            weight_sum = sum(weights)
-            weights = [weight / weight_sum for weight in weights]
-
-        # Input date range for VaR calculation
-        var_start_date = st.sidebar.text_input("Start Date (YYYY-MM-DD)", '2010-01-01')
-        var_end_date = st.sidebar.text_input("End Date (YYYY-MM-DD)", '2023-01-01')
-
-        # Portfolio value
-        portfolio_value = st.sidebar.number_input("Portfolio Starting Value", min_value=1.0, value=100000.0)
-
-        # Define the scaling function
-        def scale(x):
-            return x / np.sum(np.abs(x))
-
-        # Download historical stock data for the specified date range for selected tickers and S&P 500
-        all_tickers.append('^GSPC')  # Adding S&P 500 to the list of tickers
-        data = yf.download(all_tickers, start=var_start_date, end=var_end_date)
-
-        # Calculate daily returns for the selected tickers and S&P 500
-        returns = data['Adj Close'].pct_change()
-        returns = returns.dropna()
-
-         # Center returns around zero
-        returns_centered = returns - returns.mean()    
-    
-
-        # Scale the initial weights
-        portfolio_weights = scale(weights)
-
-        # Calculate portfolio returns by multiplying the returns of each stock by their respective weights
-        portfolio_returns = np.dot(returns.iloc[:, :-1], portfolio_weights)  # Exclude the last column (S&P 500)
+            # Radio button for selecting equal or custom weights
+            weight_option = st.radio("Select Weight Option", ["Equal Weights", "Custom Weights"])
         
-        # Calculate the S&P 500 returns
-        sp500_returns = returns['^GSPC']
-
-        # Add S&P 500 returns to the portfolio returns
-        portfolio_returns_with_sp500 = portfolio_returns + sp500_returns
-
-        # Calculate the dollar value of the portfolio based on the input portfolio value
-        portfolio_dollar_value = portfolio_value * (1 + portfolio_returns_with_sp500).cumprod()
-
-        # Display portfolio returns with S&P 500
-        st.subheader("Portfolio Returns vs S&P 500")
-        portfolio_chart_data = pd.DataFrame({
-            'Portfolio': portfolio_dollar_value,
-            'S&P 500': (portfolio_value * (1 + sp500_returns).cumprod())
-        })
-        st.line_chart(portfolio_chart_data, use_container_width=True)
-
-        # Calculate cumulative returns for individual holdings
-        cumulative_returns = (1 + returns.iloc[:, :-1]).cumprod() - 1
-
-        # Calculate volatility for individual holdings
-        volatility = returns_centered.iloc[:, :-1].std()
-
-        # Display cumulative returns in a table
-        st.subheader("Returns vs Volatility")
-        cumulative_returns_table_data = pd.DataFrame({
-            'Ticker': all_tickers[:-1],
-            'Cumulative Return': cumulative_returns.iloc[-1] * 100,  # Display as percentage
-            'Volatility': volatility * 100  # Display as percentage
-        })
-
-        # Ensure all values are positive
-        cumulative_returns_table_data['Cumulative Return'] = cumulative_returns_table_data['Cumulative Return'].abs()
-
-        # Set the 'Ticker' column as the index
-        cumulative_returns_table_data['Ticker'] = all_tickers[:-1]
-        cumulative_returns_table_data.set_index('Ticker', inplace=True)
-
-        # Display cumulative returns table
-        cumulative_returns_table_data = cumulative_returns_table_data.rename_axis('Ticker')
-        st.table(cumulative_returns_table_data)
+            # Initialize an empty list to store weights
+            weights = []
         
-        # Calculate VaR for different confidence levels
-        confidence_levels = [0.9, 0.95, 0.99]
+            if weight_option == "Equal Weights":
+                weights = np.array([1 / len(all_tickers)] * len(all_tickers))
+            else:
+                for ticker in all_tickers:
+                    weight = st.text_input(f"Weight for {ticker}", value="0.001", key=ticker)
+                    weights.append(float(weight))  # Convert the input to float
+        
+                # Normalize custom weights to ensure they sum up to 1
+                weight_sum = sum(weights)
+                weights = [weight / weight_sum for weight in weights]
+        
+            # Input date range for VaR calculation
+            var_start_date = st.sidebar.text_input("Start Date (YYYY-MM-DD)", '2010-01-01')
+            var_end_date = st.sidebar.text_input("End Date (YYYY-MM-DD)", '2023-01-01')
+        
+            # Portfolio value
+            portfolio_value = st.sidebar.number_input("Portfolio Starting Value", min_value=1.0, value=100000.0)
+        
+            # Define the scaling function
+            def scale(x):
+                return x / np.sum(np.abs(x))
+        
+            # Download historical stock data for the specified date range for selected tickers and S&P 500
+            all_tickers.append('^GSPC')  # Adding S&P 500 to the list of tickers
+            data = yf.download(all_tickers, start=var_start_date, end=var_end_date)
+        
+            # Calculate daily returns for the selected tickers and S&P 500
+            returns = data['Adj Close'].pct_change()
+            returns = returns.dropna()
+        
+             # Center returns around zero
+            returns_centered = returns - returns.mean()    
+        
+        
+            # Scale the initial weights
+            portfolio_weights = scale(weights)
+        
+            # Calculate portfolio returns by multiplying the returns of each stock by their respective weights
+            portfolio_returns = np.dot(returns.iloc[:, :-1], portfolio_weights)  # Exclude the last column (S&P 500)
+            
+            # Calculate the S&P 500 returns
+            sp500_returns = returns['^GSPC']
+        
+            # Add S&P 500 returns to the portfolio returns
+            portfolio_returns_with_sp500 = portfolio_returns + sp500_returns
+        
+            # Calculate the dollar value of the portfolio based on the input portfolio value
+            portfolio_dollar_value = portfolio_value * (1 + portfolio_returns_with_sp500).cumprod()
+        
+            # Display portfolio returns with S&P 500
+            st.subheader("Portfolio Returns vs S&P 500")
+            portfolio_chart_data = pd.DataFrame({
+                'Portfolio': portfolio_dollar_value,
+                'S&P 500': (portfolio_value * (1 + sp500_returns).cumprod())
+            })
+            st.line_chart(portfolio_chart_data, use_container_width=True)
+        
+            # Calculate cumulative returns for individual holdings
+            cumulative_returns = (1 + returns.iloc[:, :-1]).cumprod() - 1
+        
+            # Calculate volatility for individual holdings
+            volatility = returns_centered.iloc[:, :-1].std()
+        
+            # Display cumulative returns in a table
+            st.subheader("Returns vs Volatility")
+            cumulative_returns_table_data = pd.DataFrame({
+                'Ticker': all_tickers[:-1],
+                'Cumulative Return': cumulative_returns.iloc[-1] * 100,  # Display as percentage
+                'Volatility': volatility * 100  # Display as percentage
+            })
+        
+            # Ensure all values are positive
+            cumulative_returns_table_data['Cumulative Return'] = cumulative_returns_table_data['Cumulative Return'].abs()
+        
+            # Set the 'Ticker' column as the index
+            cumulative_returns_table_data['Ticker'] = all_tickers[:-1]
+            cumulative_returns_table_data.set_index('Ticker', inplace=True)
+        
+            # Display cumulative returns table
+            cumulative_returns_table_data = cumulative_returns_table_data.rename_axis('Ticker')
+            st.table(cumulative_returns_table_data)
+            
+            # Calculate VaR for different confidence levels
+            confidence_levels = [0.9, 0.95, 0.99]
+        
+            # Calculate Historical VaR
+            historical_var_percentiles = [np.percentile(portfolio_returns_with_sp500, 100 - level*100) for level in confidence_levels]
+            historical_var_dollars = [portfolio_value * percentile for percentile in historical_var_percentiles]
+        
+            # Calculate Variance-Covariance VaR
+            m = portfolio_returns_with_sp500.mean()
+            std_dev = portfolio_returns_with_sp500.std()
+            var_covar_percentiles = [norm.ppf(1 - level, m, std_dev) for level in confidence_levels]
+            var_covar_dollars = [portfolio_value * percentile for percentile in var_covar_percentiles]
+        
+            # Perform Monte Carlo Simulation for VaR
+            num_simulations = 10_000
+            simulation_results = []
+            for _ in range(num_simulations):
+                daily_returns = np.random.normal(m, std_dev, len(portfolio_returns_with_sp500))
+                simulation_results.append(daily_returns[-1])  # Keep only the last day's return
+            simulation_results = np.array(simulation_results)
+            monte_carlo_var_percentiles = [np.percentile(simulation_results, 100 - level*100) for level in confidence_levels]
+            monte_carlo_var_dollars = [portfolio_value * percentile for percentile in monte_carlo_var_percentiles]
+        
+            # Display VaR results
+            st.subheader("VaR Analysis")
+            for i, level in enumerate(confidence_levels):
+                st.write(f'Historical VaR at {int(level*100)}%: ${historical_var_dollars[i]:,.2f}')
+                st.write(f'Variance-Covariance VaR at {int(level*100)}%: ${var_covar_dollars[i]:,.2f}')
+                st.write(f'Monte Carlo VaR at {int(level*100)}%: ${monte_carlo_var_dollars[i]:,.2f}')
+        
+        
+        elif analysis_option == "Hedging":
+        st.sidebar.header("Options Pricing")
+        
+        # User input for stock symbol, strike price, days to expiration, and risk-free rate
+        stock_name = st.text_input("Enter Ticker", 'AAPL')
+        strike_price = st.number_input("Enter Strike Price", value=0, key="strike_price")
+        days_to_expiration = st.number_input("Enter Days to Expiration", 1, 365, 30)  # Adjust the range as needed
+        risk_free_rate = st.number_input("Enter Risk-Free Rate", 0.01, 0.10, 0.0433, 0.001, key="risk_free_rate")
+        
+        # Define start_date and end_date as user inputs
+        end_date = st.date_input("Select End Date", datetime.today())
+        n_years = st.number_input("Enter Number of Years", 1)
+        start_date = end_date - timedelta(days=n_years * 365)
+        
+        # Download stock data
+        stock_data = yf.download(tickers=stock_name, start=start_date, end=end_date)
+        stock_prices = stock_data['Adj Close']
+        
+        # Calculate log returns and volatility
+        log_returns = np.log(stock_prices / stock_prices.shift(10)).dropna()
+        trading_days_year = 252
+        trading_days_month = 21
+        volatility = log_returns.rolling(window=trading_days_month).std() * np.sqrt(trading_days_year)
+        
+        # Create a DataFrame with both sets of data
+        data = pd.DataFrame({'Stock Prices': stock_prices, 'Volatility': volatility})
+        
+        fig, ax = plt.subplots()
+        ax.plot(stock_prices, color = 'red')
+        ax.set_xlabel("Date", fontsize = 14)
+        ax.set_ylabel("Stock price", color = 'red', fontsize = 14)
+        
+        ax2 = ax.twinx()
+        ax2.plot(volatility, color = 'blue')
+        ax2.set_ylabel("Volatility", color = 'blue', fontsize = 14)
+        
+        st.pyplot(plt)
+        
+        # BS Call option pricing
+        st.subheader("Black-Scholes Call Option Pricing")
+        S0_call = stock_prices.iloc[-1]
+        T_call = days_to_expiration / 365
+        vol_call = volatility.iloc[-1]
+        call_option_price = bs("c", S0_call, strike_price, T_call, risk_free_rate, vol_call)
+        st.write("Call Option price:", call_option_price)
+        
+        # Greeks for Call option
+        st.subheader("Call Option Greeks")
+        delta_option_call = delta("c", S0_call, strike_price, T_call, risk_free_rate, vol_call)
+        gamma_option_call = gamma("c", S0_call, strike_price, T_call, risk_free_rate, vol_call)
+        vega_option_call = vega("c", S0_call, strike_price, T_call, risk_free_rate, vol_call)
+        rho_option_call = rho("c", S0_call, strike_price, T_call, risk_free_rate, vol_call)
+        theta_option_call = theta("c", S0_call, strike_price, T_call, risk_free_rate, vol_call)
+        
+        st.write("Delta (Call):", round(delta_option_call, 3))
+        st.write("Gamma (Call):", round(gamma_option_call, 3))
+        st.write("Vega (Call):", round(vega_option_call, 3))
+        st.write("Rho (Call):", round(rho_option_call, 3))
+        st.write("Theta (Call):", round(theta_option_call, 3))
+        
+        # BS Put option pricing
+        st.subheader("Black-Scholes Put Option Pricing")
+        S0_put = stock_prices.iloc[-1]
+        vol_put = volatility.iloc[-1]
+        put_option_price = bs("p", S0_put, strike_price, T_call, risk_free_rate, vol_put)
+        st.write("Put Option price:", put_option_price)
+        
+        # Greeks for Put option
+        st.subheader("Put Option Greeks")
+        delta_option_put = delta("p", S0_put, strike_price, T_call, risk_free_rate, vol_put)
+        gamma_option_put = gamma("p", S0_put, strike_price, T_call, risk_free_rate, vol_put)
+        vega_option_put = vega("p", S0_put, strike_price, T_call, risk_free_rate, vol_put)
+        rho_option_put = rho("p", S0_put, strike_price, T_call, risk_free_rate, vol_put)
+        theta_option_put = theta("p", S0_put, strike_price, T_call, risk_free_rate, vol_put)
+        
+        st.write("Delta (Put):", round(delta_option_put, 3))
+        st.write("Gamma (Put):", round(gamma_option_put, 3))
+        st.write("Vega (Put):", round(vega_option_put, 3))
+        st.write("Rho (Put):", round(rho_option_put, 3))
+        st.write("Theta (Put):", round(theta_option_put, 3))
+        
+        elif analysis_option == "Economic Data":
+        st.sidebar.header("Economic Data Analysis")
+        
+        # Initialize the Fred API with your API key
+        fred = Fred(api_key='a3c314b9096130db0731f91c2d8001a5')
+        
+        # Input date range for economic data
+        economic_start_date = st.sidebar.text_input("Start Date (YYYY-MM-DD)", '2010-01-01')
+        economic_end_date = st.sidebar.text_input("End Date (YYYY-MM-DD)", '2023-01-01')
+        
+        # List of available economic indicators
+        economic_indicators = {
+            'Consumer Price Index (CPI)': 'CPALTT01USM657N',
+            'Unemployment Rate': 'UNRATE',
+            '10-Year Treasury Yield': 'DGS10',
+            'Housing Prices': 'CSUSHPINSA',
+            'Trade Balance': 'BOPGSTB',
+            'Money Supply': 'M2SL',
+            'Consumer Sentiment Index': 'UMCSENT',
+        }
+        
+        # Multiselect for selecting economic indicators
+        selected_indicators = st.sidebar.multiselect("Select Economic Indicators", list(economic_indicators.keys()))
+        
+        if not selected_indicators:
+            st.warning("Please select at least one economic indicator.")
+        else:
+            # Create a DataFrame to store the selected economic indicators' data
+            economic_data = pd.DataFrame()
+        
+            # Retrieve data for selected economic indicators
+            for indicator_name in selected_indicators:
+                indicator_code = economic_indicators[indicator_name]
+                indicator_data = fred.get_series(indicator_code, start=economic_start_date, end=economic_end_date)
+                economic_data[indicator_name] = indicator_data
+        
+            # Create graphs for selected economic indicators
+            for indicator_name in selected_indicators:
+                st.subheader(f"{indicator_name} Data")
+                st.line_chart(economic_data[indicator_name])
+        
+        
+        st.sidebar.write("Data provided by Yahoo Finance. This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis.")
 
-        # Calculate Historical VaR
-        historical_var_percentiles = [np.percentile(portfolio_returns_with_sp500, 100 - level*100) for level in confidence_levels]
-        historical_var_dollars = [portfolio_value * percentile for percentile in historical_var_percentiles]
-
-        # Calculate Variance-Covariance VaR
-        m = portfolio_returns_with_sp500.mean()
-        std_dev = portfolio_returns_with_sp500.std()
-        var_covar_percentiles = [norm.ppf(1 - level, m, std_dev) for level in confidence_levels]
-        var_covar_dollars = [portfolio_value * percentile for percentile in var_covar_percentiles]
-
-        # Perform Monte Carlo Simulation for VaR
-        num_simulations = 10_000
-        simulation_results = []
-        for _ in range(num_simulations):
-            daily_returns = np.random.normal(m, std_dev, len(portfolio_returns_with_sp500))
-            simulation_results.append(daily_returns[-1])  # Keep only the last day's return
-        simulation_results = np.array(simulation_results)
-        monte_carlo_var_percentiles = [np.percentile(simulation_results, 100 - level*100) for level in confidence_levels]
-        monte_carlo_var_dollars = [portfolio_value * percentile for percentile in monte_carlo_var_percentiles]
-
-        # Display VaR results
-        st.subheader("VaR Analysis")
-        for i, level in enumerate(confidence_levels):
-            st.write(f'Historical VaR at {int(level*100)}%: ${historical_var_dollars[i]:,.2f}')
-            st.write(f'Variance-Covariance VaR at {int(level*100)}%: ${var_covar_dollars[i]:,.2f}')
-            st.write(f'Monte Carlo VaR at {int(level*100)}%: ${monte_carlo_var_dollars[i]:,.2f}')
-
-
-elif analysis_option == "Hedging":
-    st.sidebar.header("Options Pricing")
-
-    # User input for stock symbol, strike price, days to expiration, and risk-free rate
-    stock_name = st.text_input("Enter Ticker", 'AAPL')
-    strike_price = st.number_input("Enter Strike Price", value=0, key="strike_price")
-    days_to_expiration = st.number_input("Enter Days to Expiration", 1, 365, 30)  # Adjust the range as needed
-    risk_free_rate = st.number_input("Enter Risk-Free Rate", 0.01, 0.10, 0.0433, 0.001, key="risk_free_rate")
-
-    # Define start_date and end_date as user inputs
-    end_date = st.date_input("Select End Date", datetime.today())
-    n_years = st.number_input("Enter Number of Years", 1)
-    start_date = end_date - timedelta(days=n_years * 365)
-
-    # Download stock data
-    stock_data = yf.download(tickers=stock_name, start=start_date, end=end_date)
-    stock_prices = stock_data['Adj Close']
-
-    # Calculate log returns and volatility
-    log_returns = np.log(stock_prices / stock_prices.shift(10)).dropna()
-    trading_days_year = 252
-    trading_days_month = 21
-    volatility = log_returns.rolling(window=trading_days_month).std() * np.sqrt(trading_days_year)
-
-    # Create a DataFrame with both sets of data
-    data = pd.DataFrame({'Stock Prices': stock_prices, 'Volatility': volatility})
-
-    fig, ax = plt.subplots()
-    ax.plot(stock_prices, color = 'red')
-    ax.set_xlabel("Date", fontsize = 14)
-    ax.set_ylabel("Stock price", color = 'red', fontsize = 14)
-
-    ax2 = ax.twinx()
-    ax2.plot(volatility, color = 'blue')
-    ax2.set_ylabel("Volatility", color = 'blue', fontsize = 14)
-
-    st.pyplot(plt)
-
-    # BS Call option pricing
-    st.subheader("Black-Scholes Call Option Pricing")
-    S0_call = stock_prices.iloc[-1]
-    T_call = days_to_expiration / 365
-    vol_call = volatility.iloc[-1]
-    call_option_price = bs("c", S0_call, strike_price, T_call, risk_free_rate, vol_call)
-    st.write("Call Option price:", call_option_price)
-
-    # Greeks for Call option
-    st.subheader("Call Option Greeks")
-    delta_option_call = delta("c", S0_call, strike_price, T_call, risk_free_rate, vol_call)
-    gamma_option_call = gamma("c", S0_call, strike_price, T_call, risk_free_rate, vol_call)
-    vega_option_call = vega("c", S0_call, strike_price, T_call, risk_free_rate, vol_call)
-    rho_option_call = rho("c", S0_call, strike_price, T_call, risk_free_rate, vol_call)
-    theta_option_call = theta("c", S0_call, strike_price, T_call, risk_free_rate, vol_call)
-
-    st.write("Delta (Call):", round(delta_option_call, 3))
-    st.write("Gamma (Call):", round(gamma_option_call, 3))
-    st.write("Vega (Call):", round(vega_option_call, 3))
-    st.write("Rho (Call):", round(rho_option_call, 3))
-    st.write("Theta (Call):", round(theta_option_call, 3))
-
-    # BS Put option pricing
-    st.subheader("Black-Scholes Put Option Pricing")
-    S0_put = stock_prices.iloc[-1]
-    vol_put = volatility.iloc[-1]
-    put_option_price = bs("p", S0_put, strike_price, T_call, risk_free_rate, vol_put)
-    st.write("Put Option price:", put_option_price)
-
-    # Greeks for Put option
-    st.subheader("Put Option Greeks")
-    delta_option_put = delta("p", S0_put, strike_price, T_call, risk_free_rate, vol_put)
-    gamma_option_put = gamma("p", S0_put, strike_price, T_call, risk_free_rate, vol_put)
-    vega_option_put = vega("p", S0_put, strike_price, T_call, risk_free_rate, vol_put)
-    rho_option_put = rho("p", S0_put, strike_price, T_call, risk_free_rate, vol_put)
-    theta_option_put = theta("p", S0_put, strike_price, T_call, risk_free_rate, vol_put)
-
-    st.write("Delta (Put):", round(delta_option_put, 3))
-    st.write("Gamma (Put):", round(gamma_option_put, 3))
-    st.write("Vega (Put):", round(vega_option_put, 3))
-    st.write("Rho (Put):", round(rho_option_put, 3))
-    st.write("Theta (Put):", round(theta_option_put, 3))
-
-elif analysis_option == "Economic Data":
-    st.sidebar.header("Economic Data Analysis")
-
-    # Initialize the Fred API with your API key
-    fred = Fred(api_key='a3c314b9096130db0731f91c2d8001a5')
-
-    # Input date range for economic data
-    economic_start_date = st.sidebar.text_input("Start Date (YYYY-MM-DD)", '2010-01-01')
-    economic_end_date = st.sidebar.text_input("End Date (YYYY-MM-DD)", '2023-01-01')
-    
-    # List of available economic indicators
-    economic_indicators = {
-        'Consumer Price Index (CPI)': 'CPALTT01USM657N',
-        'Unemployment Rate': 'UNRATE',
-        '10-Year Treasury Yield': 'DGS10',
-        'Housing Prices': 'CSUSHPINSA',
-        'Trade Balance': 'BOPGSTB',
-        'Money Supply': 'M2SL',
-        'Consumer Sentiment Index': 'UMCSENT',
-    }
-
-    # Multiselect for selecting economic indicators
-    selected_indicators = st.sidebar.multiselect("Select Economic Indicators", list(economic_indicators.keys()))
-
-    if not selected_indicators:
-        st.warning("Please select at least one economic indicator.")
-    else:
-        # Create a DataFrame to store the selected economic indicators' data
-        economic_data = pd.DataFrame()
-
-        # Retrieve data for selected economic indicators
-        for indicator_name in selected_indicators:
-            indicator_code = economic_indicators[indicator_name]
-            indicator_data = fred.get_series(indicator_code, start=economic_start_date, end=economic_end_date)
-            economic_data[indicator_name] = indicator_data
-
-        # Create graphs for selected economic indicators
-        for indicator_name in selected_indicators:
-            st.subheader(f"{indicator_name} Data")
-            st.line_chart(economic_data[indicator_name])
-
-
-st.sidebar.write("Data provided by Yahoo Finance. This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis.")
+except Exception as e:
+    st.exception(f"ERROR! VERIFY PARAMETERS AND RERUN. Details: {str(e)}")
