@@ -12,8 +12,6 @@
 
 #pip install yfinance
 
-pip install yfinance
-pip install numpy
 
 # Import necessary libraries
 import streamlit as st
