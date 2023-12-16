@@ -348,36 +348,50 @@ elif analysis_option == "Hedging":
     st.write("Theta (Put):", round(theta_option_put, 3))
 elif analysis_option == "Economic Data":
     st.sidebar.header("Economic Data Analysis")
-    # Initialize the Fred API with your API key
-    fred = Fred(api_key='a3c314b9096130db0731f91c2d8001a5')
-    # Input date range for economic data
-    economic_start_date = st.sidebar.text_input("Start Date (YYYY-MM-DD)", '2010-01-01')
-    economic_end_date = st.sidebar.text_input("End Date (YYYY-MM-DD)", '2023-01-01')
-    
-    # List of available economic indicators
-    economic_indicators = {
-        'Consumer Price Index (CPI)': 'CPALTT01USM657N',
-        'Unemployment Rate': 'UNRATE',
-        '10-Year Treasury Yield': 'DGS10',
-        'Housing Prices': 'CSUSHPINSA',
-        'Trade Balance': 'BOPGSTB',
-        'Money Supply': 'M2SL',
-        'Consumer Sentiment Index': 'UMCSENT',
-    }
-    # Multiselect for selecting economic indicators
-    selected_indicators = st.sidebar.multiselect("Select Economic Indicators", list(economic_indicators.keys()))
-    if not selected_indicators:
-        st.warning("Please select at least one economic indicator.")
-    else:
-        # Create a DataFrame to store the selected economic indicators' data
-        economic_data = pd.DataFrame()
-        # Retrieve data for selected economic indicators
-        for indicator_name in selected_indicators:
-            indicator_code = economic_indicators[indicator_name]
-            indicator_data = fred.get_series(indicator_code, start=economic_start_date, end=economic_end_date)
-            economic_data[indicator_name] = indicator_data
-        # Create graphs for selected economic indicators
-        for indicator_name in selected_indicators:
-            st.subheader(f"{indicator_name} Data")
-            st.line_chart(economic_data[indicator_name])
+
+    try:
+        # Initialize the Fred API with your API key
+        fred = Fred(api_key='a3c314b9096130db0731f91c2d8001a5')
+
+        # Input date range for economic data
+        economic_start_date = st.sidebar.text_input("Start Date (YYYY-MM-DD)", '2010-01-01')
+        economic_end_date = st.sidebar.text_input("End Date (YYYY-MM-DD)", '2023-01-01')
+        
+        # List of available economic indicators
+        economic_indicators = {
+            'Consumer Price Index (CPI)': 'CPALTT01USM657N',
+            'Unemployment Rate': 'UNRATE',
+            '10-Year Treasury Yield': 'DGS10',
+            'Housing Prices': 'CSUSHPINSA',
+            'Trade Balance': 'BOPGSTB',
+            'Money Supply': 'M2SL',
+            'Consumer Sentiment Index': 'UMCSENT',
+        }
+
+        # Multiselect for selecting economic indicators
+        selected_indicators = st.sidebar.multiselect("Select Economic Indicators", list(economic_indicators.keys()))
+
+        if not selected_indicators:
+            st.warning("Please select at least one economic indicator.")
+        else:
+            # Create a DataFrame to store the selected economic indicators' data
+            economic_data = pd.DataFrame()
+
+            # Retrieve data for selected economic indicators
+            for indicator_name in selected_indicators:
+                indicator_code = economic_indicators[indicator_name]
+                indicator_data = fred.get_series(indicator_code, start=economic_start_date, end=economic_end_date)
+                economic_data[indicator_name] = indicator_data
+
+            # Display data only for the selected date range
+            economic_data = economic_data.loc[economic_start_date:economic_end_date]
+
+            # Create graphs for selected economic indicators
+            for indicator_name in selected_indicators:
+                st.subheader(f"{indicator_name} Data")
+                st.line_chart(economic_data[indicator_name])
+
+    except Exception as e:
+        st.exception(f"ERROR! VERIFY PARAMETERS AND RERUN. Details: {str(e)}")
+
 st.sidebar.write("Data provided by Yahoo Finance. This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis.")
