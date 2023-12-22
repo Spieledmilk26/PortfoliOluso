@@ -237,7 +237,7 @@ elif analysis_option == "Portfolio Risk":
         })
         st.line_chart(portfolio_chart_data, use_container_width=True)
 
-        # Calculate cumulative returns for individual holdings
+                # Calculate cumulative returns for individual holdings
         cumulative_returns = (1 + returns.iloc[:, :-1]).cumprod() - 1
         
         # Calculate volatility for individual holdings
@@ -257,6 +257,9 @@ elif analysis_option == "Portfolio Risk":
         
         # Set the 'Ticker' column as the index
         cumulative_returns_table_data.set_index('Ticker', inplace=True)
+        
+        # User option to reorder the table
+        order_by = st.selectbox("Order by", ["Cumulative Return", "Volatility"])
         
         # Define the arrow symbol and the corresponding sorting options for Cumulative Return
         arrow_return = "↑" if st.button("Ascending (Return)") else "↓" if st.button("Descending (Return)") else ""
