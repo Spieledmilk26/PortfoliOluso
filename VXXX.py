@@ -235,24 +235,40 @@ elif analysis_option == "Portfolio Risk":
             'S&P 500': (portfolio_value * (1 + sp500_returns).cumprod())
         })
         st.line_chart(portfolio_chart_data, use_container_width=True)
-        # Calculate cumulative returns for individual holdings
-        cumulative_returns = (1 + returns.iloc[:, :-1]).cumprod() - 1
-        # Calculate volatility for individual holdings
-        volatility = returns_centered.iloc[:, :-1].std()
-        # Display cumulative returns in a table
-        st.subheader("Returns vs Volatility")
-        cumulative_returns_table_data = pd.DataFrame({
-            'Ticker': all_tickers[:-1],
-            'Cumulative Return': cumulative_returns.iloc[-1] * 100,  # Display as percentage
-            'Volatility': volatility * 100  # Display as percentage
-        })
-        # Ensure all values are positive
-        # Set the 'Ticker' column as the index
-        cumulative_returns_table_data['Ticker'] = all_tickers[:-1]
-        cumulative_returns_table_data.set_index('Ticker', inplace=True)
-        # Display cumulative returns table
-        cumulative_returns_table_data = cumulative_returns_table_data.rename_axis('Ticker')
-        st.table(cumulative_returns_table_data)
+# Calculate cumulative returns for individual holdings
+cumulative_returns = (1 + returns.iloc[:, :-1]).cumprod() - 1
+
+# Calculate volatility for individual holdings
+volatility = returns_centered.iloc[:, :-1].std()
+
+# Display cumulative returns in a table
+st.subheader("Returns vs Volatility")
+
+cumulative_returns_table_data = pd.DataFrame({
+    'Ticker': all_tickers[:-1],
+    'Cumulative Return': cumulative_returns.iloc[-1] * 100,  # Display as percentage
+    'Volatility': volatility * 100  # Display as percentage
+})
+
+# Ensure all values are positive (optional based on your requirement)
+# cumulative_returns_table_data['Cumulative Return'] = cumulative_returns_table_data['Cumulative Return'].abs()
+
+# Set the 'Ticker' column as the index
+cumulative_returns_table_data.set_index('Ticker', inplace=True)
+
+# User option to reorder the table
+order_by = st.selectbox("Order by", ["Cumulative Return (Ascending)", "Cumulative Return (Descending)",
+                                     "Volatility (Ascending)", "Volatility (Descending)"])
+
+ascending = order_by.endswith("Ascending")
+column_to_sort = "Cumulative Return" if "Cumulative Return" in order_by else "Volatility"
+
+# Sort the table based on user selection
+cumulative_returns_table_data = cumulative_returns_table_data.sort_values(by=column_to_sort, ascending=ascending)
+
+# Display cumulative returns table
+cumulative_returns_table_data = cumulative_returns_table_data.rename_axis('Ticker')
+st.table(cumulative_returns_table_data)   
         
         # Calculate VaR for different confidence levels
         confidence_levels = [0.9, 0.95, 0.99]
