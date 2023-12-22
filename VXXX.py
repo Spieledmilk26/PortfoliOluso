@@ -258,9 +258,6 @@ elif analysis_option == "Portfolio Risk":
         # Set the 'Ticker' column as the index
         cumulative_returns_table_data.set_index('Ticker', inplace=True)
         
-        # User option to reorder the table
-        order_by = st.selectbox("Order by", ["Cumulative Return", "Volatility"])
-        
         # Define the arrow symbol and the corresponding sorting options for Cumulative Return
         arrow_return = "↑" if st.button("Ascending (Return)") else "↓" if st.button("Descending (Return)") else ""
         ascending_return = arrow_return == "↑"
