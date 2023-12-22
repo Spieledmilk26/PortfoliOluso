@@ -1,6 +1,4 @@
-
-
-# Import necessary libraries
+  # Import necessary libraries
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -237,7 +235,7 @@ elif analysis_option == "Portfolio Risk":
         })
         st.line_chart(portfolio_chart_data, use_container_width=True)
 
-                # Calculate cumulative returns for individual holdings
+        # Calculate cumulative returns for individual holdings
         cumulative_returns = (1 + returns.iloc[:, :-1]).cumprod() - 1
         
         # Calculate volatility for individual holdings
@@ -259,26 +257,18 @@ elif analysis_option == "Portfolio Risk":
         cumulative_returns_table_data.set_index('Ticker', inplace=True)
         
         # User option to reorder the table
-        order_by = st.selectbox("Order by", ["Cumulative Return", "Volatility"])
+        order_by = st.selectbox("Order by", ["Cumulative Return (Ascending)", "Cumulative Return (Descending)",
+                                             "Volatility (Ascending)", "Volatility (Descending)"])
         
-        # Define the arrow symbol and the corresponding sorting options for Cumulative Return
-        arrow_return = "↑" if st.button("Ascending (Return)") else "↓" if st.button("Descending (Return)") else ""
-        ascending_return = arrow_return == "↑"
-        
-        # Define the arrow symbol and the corresponding sorting options for Volatility
-        arrow_volatility = "↑" if st.button("Ascending (Volatility)") else "↓" if st.button("Descending (Volatility)") else ""
-        ascending_volatility = arrow_volatility == "↑"
+        ascending = order_by.endswith("Ascending")
+        column_to_sort = "Cumulative Return" if "Cumulative Return" in order_by else "Volatility"
         
         # Sort the table based on user selection
-        if order_by == "Cumulative Return":
-            cumulative_returns_table_data = cumulative_returns_table_data.sort_values(by=order_by, ascending=ascending_return)
-        elif order_by == "Volatility":
-            cumulative_returns_table_data = cumulative_returns_table_data.sort_values(by=order_by, ascending=ascending_volatility)
+        cumulative_returns_table_data = cumulative_returns_table_data.sort_values(by=column_to_sort, ascending=ascending)
         
-        # Display cumulative returns table with clickable arrows
-        st.table(cumulative_returns_table_data.style.format({"Cumulative Return": lambda x: f"{x:.2f}%{arrow_return}",
-                                                             "Volatility": lambda x: f"{x:.2f}%{arrow_volatility}"},
-                                                            na_rep="-"))
+        # Display cumulative returns table
+        cumulative_returns_table_data = cumulative_returns_table_data.rename_axis('Ticker')
+        st.table(cumulative_returns_table_data)
         
         # Calculate VaR for different confidence levels
         confidence_levels = [0.9, 0.95, 0.99]
