@@ -275,9 +275,10 @@ elif analysis_option == "Portfolio Risk":
         elif order_by == "Volatility":
             cumulative_returns_table_data = cumulative_returns_table_data.sort_values(by=order_by, ascending=ascending_volatility)
         
-        # Display cumulative returns table
-        cumulative_returns_table_data = cumulative_returns_table_data.rename_axis('Ticker')
-        st.table(cumulative_returns_table_data)
+        # Display cumulative returns table with clickable arrows
+        st.table(cumulative_returns_table_data.style.format({"Cumulative Return": lambda x: f"{x:.2f}%{arrow_return}",
+                                                             "Volatility": lambda x: f"{x:.2f}%{arrow_volatility}"},
+                                                            na_rep="-"))
         
         # Calculate VaR for different confidence levels
         confidence_levels = [0.9, 0.95, 0.99]
