@@ -247,7 +247,6 @@ elif analysis_option == "Portfolio Risk":
             'Volatility': volatility * 100  # Display as percentage
         })
         # Ensure all values are positive
-        cumulative_returns_table_data['Cumulative Return'] = cumulative_returns_table_data['Cumulative Return'].abs()
         # Set the 'Ticker' column as the index
         cumulative_returns_table_data['Ticker'] = all_tickers[:-1]
         cumulative_returns_table_data.set_index('Ticker', inplace=True)
