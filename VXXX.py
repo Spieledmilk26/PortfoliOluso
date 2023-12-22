@@ -259,14 +259,21 @@ elif analysis_option == "Portfolio Risk":
         cumulative_returns_table_data.set_index('Ticker', inplace=True)
         
         # User option to reorder the table
-        order_by = st.selectbox("Order by", ["Cumulative Return (Ascending)", "Cumulative Return (Descending)",
-                                             "Volatility (Ascending)", "Volatility (Descending)"])
+        order_by = st.selectbox("Order by", ["Cumulative Return", "Volatility"])
         
-        ascending = order_by.endswith("Ascending")
-        column_to_sort = "Cumulative Return" if "Cumulative Return" in order_by else "Volatility"
+        # Define the arrow symbol and the corresponding sorting options for Cumulative Return
+        arrow_return = "↑" if st.button("Ascending (Return)") else "↓" if st.button("Descending (Return)") else ""
+        ascending_return = arrow_return == "↑"
+        
+        # Define the arrow symbol and the corresponding sorting options for Volatility
+        arrow_volatility = "↑" if st.button("Ascending (Volatility)") else "↓" if st.button("Descending (Volatility)") else ""
+        ascending_volatility = arrow_volatility == "↑"
         
         # Sort the table based on user selection
-        cumulative_returns_table_data = cumulative_returns_table_data.sort_values(by=column_to_sort, ascending=ascending)
+        if order_by == "Cumulative Return":
+            cumulative_returns_table_data = cumulative_returns_table_data.sort_values(by=order_by, ascending=ascending_return)
+        elif order_by == "Volatility":
+            cumulative_returns_table_data = cumulative_returns_table_data.sort_values(by=order_by, ascending=ascending_volatility)
         
         # Display cumulative returns table
         cumulative_returns_table_data = cumulative_returns_table_data.rename_axis('Ticker')
