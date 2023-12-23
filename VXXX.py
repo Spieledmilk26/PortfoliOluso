@@ -255,12 +255,13 @@ elif analysis_option == "Portfolio Risk":
         cumulative_returns_table_data = cumulative_returns_table_data.rename_axis('Ticker')
         st.table(cumulative_returns_table_data)
 
+
         # Download Returns as CSV
         st.subheader("Download Returns")
         st.write(cumulative_returns_table_data)
-        cumulative_returns_table_data = cumulative_returns_table_data.to_csv(index=True)
-        st.download_button("Download Returns as CSV", data=cumulative_returns_table_data_csv, file_name=f"{stock_ticker}cumulative_returns_table_data.csv")
-            
+        cumulative_returns_table_data_csv = cumulative_returns_table_data.to_csv(index=True)  # Corrected variable name
+        st.download_button("Download Returns as CSV", data=cumulative_returns_table_data_csv, file_name="cumulative_returns_table_data.csv")  
+        
         # Calculate VaR for different confidence levels
         confidence_levels = [0.9, 0.95, 0.99]
         # Calculate Historical VaR
