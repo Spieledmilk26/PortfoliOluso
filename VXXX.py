@@ -257,9 +257,7 @@ elif analysis_option == "Portfolio Risk":
 
 
         # Download Returns as CSV
-        st.subheader("Download Returns")
-        st.write(cumulative_returns_table_data)
-        cumulative_returns_table_data_csv = cumulative_returns_table_data.to_csv(index=True)  # Corrected variable name
+        cumulative_returns_table_data_csv = cumulative_returns_table_data.to_csv(index=True)
         st.download_button("Download Returns as CSV", data=cumulative_returns_table_data_csv, file_name="cumulative_returns_table_data.csv")  
         
         # Calculate VaR for different confidence levels
