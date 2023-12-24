@@ -63,8 +63,6 @@ def load_stock_data_and_forecast_fbprophet(stock_symbol, start_date, end_date, t
     # Retrieve stock price data from Yahoo Finance
     stock_data = yf.download(stock_symbol, start=start_date, end=train_end_date)
     stock_data.reset_index(inplace=True)
-    # Create a line plot for the stock's 'Date' and 'Adj Close' price
-    st.plotly_chart(px.line(stock_data, x='Date', y='Adj Close', title=f'{stock_symbol} Stock Price'))
     # Rename columns for Prophet compatibility
     stock_data = stock_data.rename(columns={'Date': 'ds', 'Adj Close': 'y'})
     # Initialize and fit Prophet model
@@ -74,15 +72,19 @@ def load_stock_data_and_forecast_fbprophet(stock_symbol, start_date, end_date, t
     future = m1.make_future_dataframe(periods=prediction_range)
     # Predict future values
     forecast = m1.predict(future)
+
+    # Plot actual and forecasted prices
+    st.plotly_chart(px.line(stock_data, x='ds', y='y', title=f'{stock_symbol} Stock Price (fbProphet)'))
+    st.plotly_chart(px.line(forecast, x='ds', y=['yhat', 'yhat_lower', 'yhat_upper'], title=f'{stock_symbol} Forecast (fbProphet)'))
+
     # Display the forecasted values
     st.write("Forecasted Stock Prices (fbProphet):")
     st.write(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']])
+
 def load_stock_data_and_forecast_garch(stock_symbol, start_date, end_date, train_end_date, test_start_date, prediction_range):
     # Retrieve stock price data from Yahoo Finance
     stock_data = yf.download(stock_symbol, start=start_date, end=train_end_date)
     stock_data.reset_index(inplace=True)
-    # Create a line plot for the stock's 'Date' and 'Adj Close' price
-    st.plotly_chart(px.line(stock_data, x='Date', y='Adj Close', title=f'{stock_symbol} Stock Price'))
     # Calculate log returns
     stock_data['log_returns'] = np.log(stock_data['Adj Close'] / stock_data['Adj Close'].shift(1))
     # Fit a GARCH(1, 1) model
@@ -91,21 +93,27 @@ def load_stock_data_and_forecast_garch(stock_symbol, start_date, end_date, train
     # Create a DataFrame for future predictions
     forecast_horizon = prediction_range
     forecasts = results.forecast(start=stock_data.index[-1], horizon=forecast_horizon)
-    # Display the forecasted volatility
+
+    # Plot actual and forecasted volatility
+    st.plotly_chart(px.line(stock_data, x='Date', y='Adj Close', title=f'{stock_symbol} Stock Price (GARCH Model)'))
     st.write("Forecasted Stock Price Volatility (GARCH Model):")
     for i in range(forecast_horizon):
         st.write(f"Day {i + 1}: {forecasts.variance.values[-1, i]:.6f}")
+
 def load_stock_data_and_forecast_xgboost(stock_symbol, start_date, end_date, train_end_date, test_start_date):
     # Download historical stock data
     train_data = yf.download(stock_symbol, start=start_date, end=train_end_date)
     test_data = yf.download(stock_symbol, start=test_start_date, end=end_date)
+
     # Data Visualization
     def visualize_data(data, title, target_column):
         plt.figure(figsize=(15, 5))
         plt.plot(data.index, data[target_column], '.', color=sns.color_palette()[0])
         plt.title(title)
         plt.show()
+
     visualize_data(train_data, f'{stock_symbol} Training Data', 'Adj Close')
+
     # Model Building
     def train_xgboost_model(train, features, target):
         X_train = train[features]
