@@ -214,7 +214,7 @@ elif analysis_option == "Portfolio Risk":
         "VTR", "VRSN", "VRSK", "VZ", "VRTX", "VFC", "VTRS", "VICI", "V", 
         "VNO", "VMC", "WAB", "WBA", "WMT", "WBD", "WM", "WAT", "WEC", "WFC", "WELL",
         "WST", "WDC", "WRK", "WY", "WHR", "WMB", "WTW", "GWW", "WYNN", "XEL", "XYL", 
-        "YUM", "ZBRA", "ZBH", "ZION", "ZTS
+        "YUM", "ZBRA", "ZBH", "ZION", "ZTS"
     ]
     # Multiselect for selecting multiple stock tickers
     selected_tickers = st.sidebar.multiselect("Select Stock Tickers", predefined_tickers)
