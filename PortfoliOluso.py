@@ -21,7 +21,7 @@ import altair as alt
 
 
 #site Title
-st.header('_P1_')
+st.header('PortfoliOluso')
 # Function to determine trading days using the NYSE calendar
 def get_trading_days(start_date, end_date):
     nyse = mcal.get_calendar('XNYS')
@@ -33,18 +33,6 @@ def load_stock_data(tickers, start, end):
     # Filter out non-trading days
     trading_days = get_trading_days(start_date=start_date, end_date=train_end_date)
     stock_data = stock_data[stock_data['Date'].isin(trading_days)]
-# Function to load economic data
-def load_economic_data(indicator, start_date, end_date):
-    fred = Fred(api_key='a3c314b9096130db0731f91c2d8001a5')  # Replace 'your_api_key' with your actual API key
-    economic_data = fred.get_series(indicator, start_date=start_date, end_date=end_date)
-    return economic_data
-# Function to preprocess and align the data
-def preprocess_data(stock_data, economic_data):
-    # Align economic data with stock data
-    aligned_data = pd.concat([stock_data, economic_data], axis=1)
-    # Remove missing values
-    aligned_data = aligned_data.dropna()
-    return aligned_data
 # Function to download stock data
 def download_stock_data(stock_symbol, start_date, end_date):
     stock_data = yf.download(stock_symbol, start=start_date, end=end_date)
@@ -52,109 +40,14 @@ def download_stock_data(stock_symbol, start_date, end_date):
     return stock_data
 # Sidebar inputs
 st.sidebar.header("Select Analysis")
-analysis_option = st.sidebar.radio("Select Analysis", ["Economic Data", "Portfolio Risk", "Hedging", "Equity Price Forecast"])
+analysis_option = st.sidebar.radio("Select Analysis", ["Portfolio Risk", "Hedging")
 # Define initial variables
 selected_tickers = []
 custom_tickers = ""
 weights = []
 moving_average_period = None
-# Function to load stock data and create a forecast using fbProphet
-def load_stock_data_and_forecast_fbprophet(stock_symbol, start_date, end_date, train_end_date, test_start_date, prediction_range):
-    # Retrieve stock price data from Yahoo Finance
-    stock_data = yf.download(stock_symbol, start=start_date, end=train_end_date)
-    stock_data.reset_index(inplace=True)
-    # Rename columns for Prophet compatibility
-    stock_data = stock_data.rename(columns={'Date': 'ds', 'Adj Close': 'y'})
-    # Initialize and fit Prophet model
-    m1 = Prophet()
-    m1.fit(stock_data)
-    # Create a DataFrame for future predictions
-    future = m1.make_future_dataframe(periods=prediction_range)
-    # Predict future values
-    forecast = m1.predict(future)
 
-    # Plot actual and forecasted prices on the same graph
-    fig = px.line(stock_data, x='ds', y='y', title=f'{stock_symbol} Stock Price (fbProphet)')
-    fig.add_scatter(x=forecast['ds'], y=forecast['yhat'], mode='lines', name='Forecasted')
-    st.plotly_chart(fig)
 
-    # Display the forecasted values
-    st.write("Forecasted Stock Prices (fbProphet):")
-    st.write(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']])
-
-def load_stock_data_and_forecast_garch(stock_symbol, start_date, end_date, train_end_date, test_start_date, prediction_range):
-    # Retrieve stock price data from Yahoo Finance
-    stock_data = yf.download(stock_symbol, start=start_date, end=train_end_date)
-    stock_data.reset_index(inplace=True)
-    # Calculate log returns
-    stock_data['log_returns'] = np.log(stock_data['Adj Close'] / stock_data['Adj Close'].shift(1))
-    # Fit a GARCH(1, 1) model
-    model = arch.arch_model(stock_data['log_returns'][1:], vol='Garch', p=1, q=1)
-    results = model.fit()
-    # Create a DataFrame for future predictions
-    forecast_horizon = prediction_range
-    forecasts = results.forecast(start=stock_data.index[-1], horizon=forecast_horizon)
-
-    # Plot actual and forecasted volatility on the same graph
-    fig = px.line(stock_data, x='Date', y='Adj Close', title=f'{stock_symbol} Stock Price (GARCH Model)')
-    fig.add_scatter(x=stock_data['Date'].iloc[-1:] + pd.to_timedelta(1, unit='D'), y=forecasts.variance.values[-1, :], mode='lines', name='Forecasted Volatility')
-    st.plotly_chart(fig)
-
-    # Display the forecasted volatility
-    st.write("Forecasted Stock Price Volatility (GARCH Model):")
-    for i in range(forecast_horizon):
-        st.write(f"Day {i + 1}: {forecasts.variance.values[-1, i]:.6f}")
-
-def load_stock_data_and_forecast_xgboost(stock_symbol, start_date, end_date, train_end_date, test_start_date):
-    # Download historical stock data
-    train_data = yf.download(stock_symbol, start=start_date, end=train_end_date)
-    test_data = yf.download(stock_symbol, start=test_start_date, end=end_date)
-
-    # Data Visualization
-    def visualize_data(data, title, target_column):
-        plt.figure(figsize=(15, 5))
-        plt.plot(data.index, data[target_column], '.', color=sns.color_palette()[0])
-        plt.title(title)
-        plt.show()
-
-    visualize_data(train_data, f'{stock_symbol} Training Data', 'Adj Close')
-
-    # Model Building
-    def train_xgboost_model(train, features, target):
-        X_train = train[features]
-        y_train = train[target]
-        reg = xgb.XGBRegressor(
-            n_estimators=1000,
-            early_stopping_rounds=50,
-            objective='reg:linear',
-            max_depth=3,
-            learning_rate=0.01
-        )
-        reg.fit(X_train, y_train,
-                eval_set=[(X_train, y_train)],
-                verbose=100)
-        return reg
-    FEATURES = ['Open', 'High', 'Low', 'Close', 'Volume']
-    TARGET = 'Adj Close'
-    model = train_xgboost_model(train_data, FEATURES, TARGET)
-    # Feature Importance
-    def plot_feature_importance(model):
-        fi = pd.DataFrame(data=model.feature_importances_, index=FEATURES, columns=['importance'])
-        fi.sort_values('importance').plot(kind='barh', title='Feature Importance')
-    plot_feature_importance(model)
-    # Forecasting for test data
-    def plot_predictions_vs_truth(data, title):
-        ax = data['Adj Close'].plot(figsize=(15, 5))
-        data['prediction'].plot(ax=ax, style='.')
-        plt.legend(['Truth Data', 'Predictions'])
-        ax.set_title(title)
-    test_data['prediction'] = model.predict(test_data[FEATURES])
-    plot_predictions_vs_truth(test_data, f'{stock_symbol} Stock Price Prediction (Test Data)')
-    # Model Evaluation
-    def evaluate_model(test, target_col, prediction_col):
-        rmse = np.sqrt(mean_squared_error(test[target_col], test[prediction_col]))
-        print(f'RMSE Score on Test set: {rmse:0.2f}')
-    evaluate_model(test_data, TARGET, 'prediction')
 # Function to calculate individual holding volatility and returns
 def calculate_individual_holdings_stats(returns, weights):
     individual_volatility = np.std(returns, axis=0)
@@ -162,24 +55,8 @@ def calculate_individual_holdings_stats(returns, weights):
     weighted_volatility = np.dot(individual_volatility, weights)
     weighted_returns = np.dot(individual_returns, weights)
     return individual_volatility, individual_returns, weighted_volatility, weighted_returns
-# Add options for different functionalities
-if analysis_option == "Equity Price Forecast":
-    st.sidebar.header("Equity Price Forecast")
-    option = st.sidebar.selectbox("Select an Option", ["Stock Price Forecast using fbProphet", "Garch Model", "XGBoost Model"])
-    stock_symbol = st.sidebar.text_input("Enter Stock Symbol")
-    start_date = st.sidebar.date_input("Start Date")
-    train_end_date = st.sidebar.date_input("Train End Date")
-    test_start_date = st.sidebar.date_input("Test Start Date")
-    end_date = st.sidebar.date_input("End Date")
-    prediction_range = st.sidebar.number_input("Prediction Range (days)", 1, 365, 30)
-    if st.sidebar.button("Generate Forecast"):
-        if option == "Stock Price Forecast using fbProphet":
-            load_stock_data_and_forecast_fbprophet(stock_symbol, start_date, end_date, train_end_date, test_start_date, prediction_range)
-        elif option == "Garch Model":
-            load_stock_data_and_forecast_garch(stock_symbol, start_date, end_date, train_end_date, test_start_date, prediction_range)
-        elif option == "XGBoost Model":
-            load_stock_data_and_forecast_xgboost(stock_symbol, start_date, end_date, train_end_date, test_start_date)
-elif analysis_option == "Portfolio Risk":
+    
+if analysis_option == "Portfolio Risk":
     st.sidebar.header("Value at Risk (VaR) Analysis")
     # List of stock tickers in the portfolio
     predefined_tickers = [
@@ -402,52 +279,5 @@ elif analysis_option == "Hedging":
     st.write("Vega (Put):", round(vega_option_put, 3))
     st.write("Rho (Put):", round(rho_option_put, 3))
     st.write("Theta (Put):", round(theta_option_put, 3))
-elif analysis_option == "Economic Data":
-    st.sidebar.header("Economic Data Analysis")
-
-    try:
-        # Initialize the Fred API with your API key
-        fred = Fred(api_key='a3c314b9096130db0731f91c2d8001a5')
-
-        # Input date range for economic data
-        economic_start_date = st.sidebar.text_input("Start Date (YYYY-MM-DD)", '2010-01-01')
-        economic_end_date = st.sidebar.text_input("End Date (YYYY-MM-DD)", '2023-01-01')
-        
-        # List of available economic indicators
-        economic_indicators = {
-            'Consumer Price Index (CPI)': 'CPALTT01USM657N',
-            'Unemployment Rate': 'UNRATE',
-            '10-Year Treasury Yield': 'DGS10',
-            'Housing Prices': 'CSUSHPINSA',
-            'Trade Balance': 'BOPGSTB',
-            'Money Supply': 'M2SL',
-            'Consumer Sentiment Index': 'UMCSENT',
-        }
-
-        # Multiselect for selecting economic indicators
-        selected_indicators = st.sidebar.multiselect("Select Economic Indicators", list(economic_indicators.keys()))
-
-        if not selected_indicators:
-            st.warning("Please select at least one economic indicator.")
-        else:
-            # Create a DataFrame to store the selected economic indicators' data
-            economic_data = pd.DataFrame()
-
-            # Retrieve data for selected economic indicators
-            for indicator_name in selected_indicators:
-                indicator_code = economic_indicators[indicator_name]
-                indicator_data = fred.get_series(indicator_code, start=economic_start_date, end=economic_end_date)
-                economic_data[indicator_name] = indicator_data
-
-            # Display data only for the selected date range
-            economic_data = economic_data.loc[economic_start_date:economic_end_date]
-
-            # Create graphs for selected economic indicators
-            for indicator_name in selected_indicators:
-                st.subheader(f"{indicator_name} Data")
-                st.line_chart(economic_data[indicator_name])
-
-    except Exception as e:
-        st.exception(f"ERROR! VERIFY PARAMETERS AND RERUN. Details: {str(e)}")
-
+    
 st.sidebar.write("Data provided by Yahoo Finance. This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis.")
