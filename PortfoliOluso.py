@@ -219,7 +219,7 @@ elif analysis_option == "Hedging":
     stock_name = st.text_input("Enter Ticker", 'AAPL')
     strike_price = st.number_input("Enter Strike Price", value=0, key="strike_price")
     days_to_expiration = st.number_input("Enter Days to Expiration", 1, 365, 30)  # Adjust the range as needed
-    risk_free_rate = st.number_input("Enter Risk-Free Rate", 0.01, 0.10, 0.0433, 0.001, key="risk_free_rate")
+    risk_free_rate = st.number_input("Enter Risk-Free Rate", 0.01, 0.10, 0.0433, 0.0001, key="risk_free_rate")
     # Define start_date and end_date as user inputs
     end_date = st.date_input("Select End Date", datetime.today())
     n_years = st.number_input("Enter Number of Years", 1)
