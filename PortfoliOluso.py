@@ -40,7 +40,7 @@ def download_stock_data(stock_symbol, start_date, end_date):
     return stock_data
 # Sidebar inputs
 st.sidebar.header("Select Analysis")
-analysis_option = st.sidebar.radio("Select Analysis", ["Portfolio Risk", "Hedging")
+analysis_option = st.sidebar.radio("Select Analysis", ["Portfolio Risk", "Hedging"])
 # Define initial variables
 selected_tickers = []
 custom_tickers = ""
