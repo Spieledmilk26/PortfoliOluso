@@ -129,7 +129,7 @@ if analysis_option == "Portfolio Risk":
             weight_sum = sum(weights)
             weights = [weight / weight_sum for weight in weights]
         # Input date range for VaR calculation
-        var_start_date = st.sidebar.text_input("Start Date (YYYY-MM-DD)", '2010-01-01')
+        var_start_date = st.sidebar.text_input("Start Date (YYYY-MM-DD)", '1980-01-01')
         var_end_date = st.sidebar.text_input("End Date (YYYY-MM-DD)", '2023-01-01')
         # Portfolio value
         portfolio_value = st.sidebar.number_input("Portfolio Starting Value", min_value=1.0, value=100000.0)
