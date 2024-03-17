@@ -123,7 +123,7 @@ if analysis_option == "Portfolio Risk":
             weights = np.array([1 / len(all_tickers)] * len(all_tickers))
         else:
             for ticker in all_tickers:
-                weight = st.text_input(f"Weight for {ticker}", value = np.array([1 / len(all_tickers)] * len(all_tickers)), key=ticker)
+                weight = st.text_input(f"Weight for {ticker}", value = ".05", key=ticker)
                 weights.append(float(weight))  # Convert the input to float
             # Normalize custom weights to ensure they sum up to 1
             weight_sum = sum(weights)
