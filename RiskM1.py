@@ -8,15 +8,9 @@ from scipy.stats import norm
 from datetime import datetime, timedelta
 from py_vollib.black_scholes import black_scholes as bs
 from py_vollib.black_scholes.greeks.analytical import delta, gamma, vega, theta, rho
-from fredapi import Fred
-from prophet import Prophet
-import plotly.express as px
-import arch
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import mean_squared_error
-import xgboost as xgb
-import altair as alt
 
 
 
