@@ -15,7 +15,7 @@ from sklearn.metrics import mean_squared_error
 
 
 #site Title
-st.header('PortfoliOluso')
+st.header('RiskM1')
 # Function to determine trading days using the NYSE calendar
 def get_trading_days(start_date, end_date):
     nyse = mcal.get_calendar('XNYS')
