@@ -8,14 +8,20 @@ from scipy.stats import norm
 from datetime import datetime, timedelta
 from py_vollib.black_scholes import black_scholes as bs
 from py_vollib.black_scholes.greeks.analytical import delta, gamma, vega, theta, rho
+from fredapi import Fred
+from prophet import Prophet
+import plotly.express as px
+import arch
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import mean_squared_error
+import xgboost as xgb
+import altair as alt
 
 
 
 #site Title
-st.header('RiskM1')
+st.header('PortfoliOluso')
 # Function to determine trading days using the NYSE calendar
 def get_trading_days(start_date, end_date):
     nyse = mcal.get_calendar('XNYS')
@@ -274,4 +280,4 @@ elif analysis_option == "Hedging":
     st.write("Rho (Put):", round(rho_option_put, 3))
     st.write("Theta (Put):", round(theta_option_put, 3))
     
-st.sidebar.write("Data provided by Yahoo Finance. This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis.")
+st.sidebar.write("Data provided by Yahoo Finance.")
